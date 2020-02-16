@@ -2,7 +2,6 @@ from databases import Database
 
 from markette import settings
 
-
 database = None
 
 

@@ -1,5 +1,3 @@
-# from .fixtures import client, db
-
 import asyncio
 import os
 
@@ -8,7 +6,6 @@ from starlette.testclient import TestClient
 
 from markette import db as _db
 from markette.app import app
-
 
 assert os.getenv('ENV') == 'test', 'Must be a test environment'
 

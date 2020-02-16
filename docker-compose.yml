@@ -1,0 +1,55 @@
+version: '2'
+services:
+
+  # Python base app
+  markette-base:
+    image: tunedmystic/markette
+    container_name: markette-base
+    build: .
+    environment:
+      DATABASE_DSN: postgresql://postgres:postgres@db:5432/postgres
+      ENV: dev
+      LOG_LEVEL: INFO
+
+  # Python app
+  markette:
+    container_name: markette
+    extends: markette-base
+    ports:
+        - 8000:8000
+    volumes:
+        - ${PWD}:/app
+    depends_on:
+        - db
+
+  # Python test app
+  markette-test:
+    container_name: markette-test
+    extends: markette-base
+    build:
+        context: .
+        dockerfile: Dockerfile
+        args:
+            - EXTRA_REQUIREMENTS=requirements-dev.txt
+    volumes:
+        - ${PWD}:/app
+    depends_on:
+        - db-test
+    environment:
+        ENV: test
+    command: ["pytest", "tests"]
+
+  # Postgres database
+  db:
+    image: postgres:11-alpine
+    container_name: db
+    ports:
+      - 55432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  # Postgres test database
+  db-test:
+    image: postgres:11-alpine
+    container_name: db-test
