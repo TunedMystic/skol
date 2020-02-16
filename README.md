@@ -10,7 +10,12 @@ Run postgres container
 docker run -d -p 5432:5432 --name db postgres:11-alpine
 ```
 
+Run the app
+```
+uvicorn markette.app:app --reload
+```
+
 Run tests
 ```
-python -m unittest
+ENV=test pytest tests
 ```

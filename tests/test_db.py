@@ -1,11 +1,7 @@
-import asyncio
-import unittest
+import pytest
 
 
-class DBTestCase(unittest.TestCase):
-    async def check(self):
-        return 'hi'
-
-    def test_check(self):
-        result = asyncio.run(self.check())
-        self.assertEqual(result, 'hi')
+@pytest.mark.asyncio
+async def test__db_check(db):
+    row = await db.fetch_one("select 'hello there' as message;")
+    assert row['message'] == 'hello there'
