@@ -25,7 +25,7 @@ case ${ARGS[0]} in
         docker container rm -fv markette db
         ;;
     lint)
-        docker-compose run --rm markette-test sh -c "./bin/lint" && \
+        docker-compose run --rm markette-test sh -c "sh -c 'flake8 && isort --recursive --check-only --diff markette'" && \
         docker container rm -fv db-test
         ;;
     test)
