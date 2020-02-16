@@ -11,13 +11,25 @@ ARGS=("$@")
 # -------------------------------------------------------------------
 
 case ${ARGS[0]} in
-    db)
-        docker run -d -p 5432:5432 --name db postgres:11-alpine
+    build)
+        docker-compose build markette
+        ;;
+    build-test)
+        docker-compose build markette-test
         ;;
     start)
-        uvicorn markette.app:app --reload
+        docker-compose up -d markette && \
+        docker-compose logs -f markette
+        ;;
+    remove)
+        docker container rm -fv markette db
+        ;;
+    lint)
+        docker-compose run --rm markette-test sh -c "./bin/lint" && \
+        docker container rm -fv db-test
         ;;
     test)
-        ENV=test pytest tests
+        docker-compose run --rm markette-test && \
+        docker container rm -fv db-test
         ;;
 esac

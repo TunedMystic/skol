@@ -11,8 +11,8 @@ env:
   global:
     - APP_NAME=markette
 
-install: docker-compose build markette-test
+install: ./app.sh build-test
 
 script:
-  - docker-compose run --rm markette-test sh -c 'flake8 && isort --recursive --check-only --diff markette'
-  - docker-compose run --rm markette-test
+  - ./app.sh lint
+  - ./app.sh test

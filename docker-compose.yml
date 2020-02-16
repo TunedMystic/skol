@@ -11,6 +11,11 @@ services:
       ENV: dev
       LOG_LEVEL: INFO
 
+
+  # ---------------------------------------------
+  # Services for dev / prod.
+  # ---------------------------------------------
+
   # Python app
   markette:
     container_name: markette
@@ -21,6 +26,21 @@ services:
         - ${PWD}:/app
     depends_on:
         - db
+
+  # Postgres database
+  db:
+    image: postgres:11-alpine
+    container_name: db
+    ports:
+      - 55432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+
+  # ---------------------------------------------
+  # Services for testing.
+  # ---------------------------------------------
 
   # Python test app
   markette-test:
@@ -39,16 +59,6 @@ services:
         DATABASE_DSN: postgresql://postgres:postgres@db-test:5432/postgres
         ENV: test
     command: ["pytest", "tests"]
-
-  # Postgres database
-  db:
-    image: postgres:11-alpine
-    container_name: db
-    ports:
-      - 55432:5432
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
 
   # Postgres test database
   db-test:
