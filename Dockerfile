@@ -1,6 +1,9 @@
 FROM tunedmystic/python-async-deps as base
 
 
+# -------------------------------------
+# Build the base image, installing pip dependencies.
+# -------------------------------------
 
 FROM base AS base-build
 
@@ -14,7 +17,7 @@ RUN mkdir -p /opt/local
 
 # Copy requirements and install.
 COPY requirements.txt requirements-dev.txt /tmp/
-RUN echo $EXTRA_REQUIREMENTS
+
 RUN pip install \
     --prefix=/opt/local \
     --disable-pip-version-check \
@@ -22,6 +25,9 @@ RUN pip install \
     -r /tmp/${EXTRA_REQUIREMENTS:-requirements.txt}
 
 
+# -------------------------------------
+# Build the final image, setting envs and copying over pip dependencies.
+# -------------------------------------
 
 FROM python:3.7.3-alpine3.9 AS final-build
 
@@ -33,7 +39,6 @@ COPY --from=base-build /opt/local /opt/local
 
 ENV APP_NAME=markette \
     APP_PATH=/app \
-    DATABASE_DSN=postgresql://postgres:postgres@db:5432/postgres \
     PATH=/opt/local/bin:$PATH \
     PYTHONPATH=/opt/local/lib/python3.7/site-packages:/app/markette \
     PYTHONUNBUFFERED=1
