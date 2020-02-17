@@ -5,17 +5,12 @@ A simple marketplace api, built with starlette and asyncpg.
 
 <br />
 
-Run postgres container
-```
-docker run -d -p 5432:5432 --name db postgres:11-alpine
-```
+### Quickstart
 
-Run the app
-```
-uvicorn markette.app:app --reload
-```
+Build the app containers with `make build`
 
-Run tests
-```
-ENV=test pytest tests
-```
+Start the app with `make start`
+
+Run tests with `make test`
+
+Remove containers with `make remove`
