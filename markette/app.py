@@ -15,7 +15,9 @@ def version(request):
 
 
 async def message(request):
-    row = await db.database.fetch_one('select 1 as message;')
+    conn = await db.get_connection()
+    row = await conn.fetchrow('select 1 as message;')
+    await conn.close()
     return JSONResponse(dict(row))
 
 
@@ -36,12 +38,12 @@ class ProductList(HTTPEndpoint):
 
 
 async def startup():
-    await db.connect()
+    await db.initialize()
     print('starting up...')
 
 
 async def shutdown():
-    await db.disconnect()
+    await db.shutdown()
     print('shutting down...')
 
 
