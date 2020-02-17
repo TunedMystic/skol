@@ -7,10 +7,6 @@ branches:
   only:
     - master
 
-env:
-  global:
-    - APP_NAME=markette
-
 install: make build-test
 
 script:
