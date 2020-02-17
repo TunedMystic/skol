@@ -28,5 +28,13 @@ def client():
 
 @pytest.fixture(scope='session')
 async def db():
-    await _db.connect()
-    yield _db.database
+    await _db.initialize()
+    yield _db
+    await _db.shutdown()
+
+
+@pytest.fixture(scope='function')
+async def conn(db):
+    conn = await db.get_connection()
+    yield conn
+    await conn.close()
