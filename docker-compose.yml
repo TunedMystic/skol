@@ -3,7 +3,6 @@ services:
 
   # Python base app
   markette-base:
-    image: tunedmystic/markette
     container_name: markette-base
     build: .
     environment:
@@ -18,6 +17,7 @@ services:
 
   # Python app
   markette:
+    image: tunedmystic/markette
     container_name: markette
     extends: markette-base
     ports:
@@ -26,6 +26,7 @@ services:
         - ${PWD}:/app
     depends_on:
         - db
+    tty: true
 
   # Postgres database
   db:
@@ -44,6 +45,7 @@ services:
 
   # Python test app
   markette-test:
+    image: tunedmystic/markette-test
     container_name: markette-test
     extends: markette-base
     build:

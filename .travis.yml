@@ -11,8 +11,8 @@ env:
   global:
     - APP_NAME=markette
 
-install: ./app.sh build-test
+install: make build-test
 
 script:
-  - ./app.sh lint
-  - ./app.sh test
+  - make lint
+  - make test
