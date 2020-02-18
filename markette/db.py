@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 import asyncpg
 
 from markette import settings
@@ -32,3 +34,9 @@ async def get_connection():
         asyncpg.connection.Connection
     """
     return await _pool.acquire()
+
+
+@asynccontextmanager
+async def conn():
+    async with _pool.acquire() as conn:
+        yield conn

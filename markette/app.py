@@ -15,9 +15,12 @@ def version(request):
 
 
 async def message(request):
-    conn = await db.get_connection()
-    row = await conn.fetchrow('select 1 as message;')
-    await conn.close()
+    # conn = await db.get_connection()
+    # row = await conn.fetchrow('select 1 as message;')
+    # await conn.close()
+    # return JSONResponse(dict(row))
+    async with db.conn() as conn:
+        row = await conn.fetchrow('select 1 as message;')
     return JSONResponse(dict(row))
 
 
