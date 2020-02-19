@@ -50,4 +50,4 @@ COPY . $APP_PATH
 
 EXPOSE 8000
 
-CMD ["/app/bin/entrypoint.sh"]
+CMD ["uvicorn", "--host"" 0.0.0.0", "--port", "8000", "--workers", "2", "markette.app:app"]
