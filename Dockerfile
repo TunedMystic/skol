@@ -46,7 +46,9 @@ ENV APP_NAME=markette \
 WORKDIR $APP_PATH
 
 # Copy application source.
-COPY . $APP_PATH
+COPY markette $APP_PATH/markette
+COPY tests $APP_PATH/tests
+COPY setup.cfg $APP_PATH
 
 EXPOSE 8000
 
