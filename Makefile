@@ -12,10 +12,10 @@ help: ## This help
 	@echo "Targets:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[1m%-15s\033[0m %s\n", $$1, $$2}'
 
-build:  ## Build the images
+build: clean  ## Build the images
 	docker-compose build ${APP}
 
-build-test:  ## Build the images for testing
+build-test: clean  ## Build the images for testing
 	docker-compose build ${APP_TEST}
 
 clean:  ## Remove cached files and dirs from workspace
