@@ -21,19 +21,27 @@ services:
     container_name: markette
     extends: markette-base
     ports:
-        - 8000:8000
+      - 8000:8000
     volumes:
-        - ${PWD}:/app
+      - ${PWD}:/app
     depends_on:
-        - db
+      - db
     tty: true
+    environment:
+      ENV: prod
+    command: [
+        "uvicorn",
+        "--host", "0.0.0.0", "--port", "8000",
+        "--reload", "--reload-dir=/app/markette",
+        "markette.app:app"
+    ]
 
   # Postgres database
   db:
     image: postgres:11-alpine
     container_name: db
     ports:
-      - 55432:5432
+      - 5432:5432
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -49,14 +57,14 @@ services:
     container_name: markette-test
     extends: markette-base
     build:
-        context: .
-        dockerfile: Dockerfile
-        args:
-            - EXTRA_REQUIREMENTS=requirements-dev.txt
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - EXTRA_REQUIREMENTS=requirements-dev.txt
     volumes:
-        - ${PWD}:/app
+      - ${PWD}:/app
     depends_on:
-        - db
+      - db
     environment:
-        ENV: test
+      ENV: test
     command: ["pytest", "tests"]
