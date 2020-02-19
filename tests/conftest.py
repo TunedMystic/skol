@@ -1,13 +1,12 @@
 import asyncio
-import os
 
 import pytest
 from starlette.testclient import TestClient
 
-from markette import db as _db
+from markette import database, settings
 from markette.app import app
 
-assert os.getenv('ENV') == 'test', 'Must be a test environment'
+assert settings.TESTING, 'Must be a test environment'
 
 
 @pytest.yield_fixture(scope='session')
@@ -22,19 +21,50 @@ def event_loop(request):
 
 
 @pytest.fixture(scope='session')
-def client():
-    return TestClient(app)
-
-
-@pytest.fixture(scope='session')
 async def db():
-    await _db.initialize()
-    yield _db
-    await _db.shutdown()
+    """
+    Create and return the test database.
+    """
+
+    # Create the test database.
+    await database.connect()
+
+    async with database.grab_connection() as conn:
+        user = settings.DATABASE_DSN.username
+        name = 'test'
+        await conn.execute(f'DROP DATABASE IF EXISTS {name};')
+        await conn.execute(f'CREATE DATABASE {name};')
+        await conn.execute(f'GRANT ALL PRIVILEGES ON DATABASE {name} to {user};')
+
+    await database.close()
+
+    # Make connection to the test database, and yield it.
+    await database.initialize(str(settings.TEST_DATABASE_DSN))
+    yield database
+    await database.close()
 
 
 @pytest.fixture(scope='function')
 async def conn(db):
+    """
+    Return a connection from the database pool.
+    """
     conn = await db.get_connection()
     yield conn
     await conn.close()
+
+
+@pytest.fixture(scope='session')
+def client():
+    """
+    Return a test client for the app.
+
+    Use TestClient as context manager to run startup and shutdown handlers.
+    Ref: https://www.starlette.io/events/#running-event-handlers-in-tests
+
+    def test__homepage(client):
+        with client:
+            response = client.get('/')
+            assert response.status_code == 200
+    """
+    return TestClient(app=app)

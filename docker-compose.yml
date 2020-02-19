@@ -56,16 +56,7 @@ services:
     volumes:
         - ${PWD}:/app
     depends_on:
-        - db-test
+        - db
     environment:
-        DATABASE_DSN: postgresql://postgres:postgres@db-test:5432/postgres
         ENV: test
     command: ["pytest", "tests"]
-
-  # Postgres test database
-  db-test:
-    image: postgres:11-alpine
-    container_name: db-test
-    environment:
-        POSTGRES_USER: postgres
-        POSTGRES_PASSWORD: postgres

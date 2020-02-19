@@ -3,7 +3,7 @@ from starlette.applications import Starlette
 from starlette.endpoints import HTTPEndpoint
 from starlette.responses import JSONResponse, PlainTextResponse
 
-from markette import db
+from markette import database, settings
 
 
 def homepage(request):
@@ -15,12 +15,9 @@ def version(request):
 
 
 async def message(request):
-    # conn = await db.get_connection()
-    # row = await conn.fetchrow('select 1 as message;')
-    # await conn.close()
-    # return JSONResponse(dict(row))
-    async with db.conn() as conn:
-        row = await conn.fetchrow('select 1 as message;')
+    conn = await database.get_connection()
+    row = await conn.fetchrow('select 1 as message;')
+    await conn.close()
     return JSONResponse(dict(row))
 
 
@@ -40,20 +37,10 @@ class ProductList(HTTPEndpoint):
                             status_code=status.HTTP_201_CREATED)
 
 
-async def startup():
-    await db.initialize()
-    print('starting up...')
+app = Starlette(debug=settings.DEV)
 
-
-async def shutdown():
-    await db.shutdown()
-    print('shutting down...')
-
-
-app = Starlette()
-
-app.add_event_handler('startup', startup)
-app.add_event_handler('shutdown', shutdown)
+app.add_event_handler('startup', database.initialize)
+app.add_event_handler('shutdown', database.close)
 
 app.add_route('/', homepage)
 app.add_route('/version', version)
