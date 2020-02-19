@@ -33,11 +33,11 @@ lint:  ## Run linting
 	docker-compose run --rm ${APP_TEST} sh -c 'flake8 && isort --recursive --check-only --diff ${APP}'
 
 remove:  ## Remove the containers
-	docker container rm -fv ${APP} db
+	docker container rm -fv ${APP} db || echo "Containers are removed"
 
 start:  ## Start the containers
 	docker-compose up -d ${APP}
-	docker-compose logs -f ${APP} || echo 'Exited container logs'
+	docker-compose logs -f ${APP} || echo "Exited container logs"
 
 test:  ## Run tests
 	docker-compose run --rm ${APP_TEST}
