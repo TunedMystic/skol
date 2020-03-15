@@ -58,4 +58,3 @@ services:
       - db
     environment:
       ENV: test
-    command: ["pytest", "tests"]
