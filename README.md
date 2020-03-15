@@ -3,8 +3,6 @@ skol
 
 Skol is a simple Python project skeleton, built with starlette and asyncpg.
 
-<br />
-
 ### Quickstart
 
 Build the app containers with `make build`

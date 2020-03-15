@@ -29,7 +29,7 @@ clean:  ## Remove cached files and dirs from workspace
 
 .PHONY: lint
 lint:  ## Run linting
-	docker-compose run --rm ${APP_TEST} sh -c 'flake8 && isort --recursive --check-only --diff ${APP}'
+	docker-compose run --rm ${APP_TEST} sh -c 'flake8 && isort --recursive --check-only --diff app'
 
 .PHONY: remove
 remove:  ## Remove the containers
