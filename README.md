@@ -1,7 +1,7 @@
-Markette
+skol
 ---
 
-A simple marketplace api, built with starlette and asyncpg.
+Skol is a simple Python project skeleton, built with starlette and asyncpg.
 
 <br />
 

@@ -1,28 +1,25 @@
 FROM tunedmystic/python-async-deps as base
 
 
+
 # -------------------------------------
 # Build the base image, installing pip dependencies.
 # -------------------------------------
 
 FROM base AS base-build
 
-ARG EXTRA_REQUIREMENTS
+ARG REQUIREMENTS_FILE
 
 # Modify Python path, to be able to get packages from the base image.
-ENV PATH=/opt/local/bin:$PATH \
-    PYTHONPATH=/opt/local/lib/python3.7/site-packages
+ENV PATH=/opt/local/bin:$PATH PYTHONPATH=/opt/local/lib/python3.7/site-packages
 
 RUN mkdir -p /opt/local
 
 # Copy requirements and install.
 COPY requirements.txt requirements-dev.txt /tmp/
 
-RUN pip install \
-    --prefix=/opt/local \
-    --disable-pip-version-check \
-    --no-warn-script-location \
-    -r /tmp/${EXTRA_REQUIREMENTS:-requirements.txt}
+RUN pip install --prefix=/opt/local --disable-pip-version-check --no-warn-script-location -r /tmp/${REQUIREMENTS_FILE:-requirements.txt}
+
 
 
 # -------------------------------------
@@ -37,19 +34,15 @@ RUN apk add --no-cache bash
 # Copy requirements from builder image.
 COPY --from=base-build /opt/local /opt/local
 
-ENV APP_NAME=markette \
-    APP_PATH=/app \
-    PATH=/opt/local/bin:$PATH \
-    PYTHONPATH=/opt/local/lib/python3.7/site-packages:/app/markette \
-    PYTHONUNBUFFERED=1
+ENV APP_NAME=app APP_PATH=/usr/src PATH=/opt/local/bin:$PATH PYTHONPATH=/opt/local/lib/python3.7/site-packages:/usr/src/app PYTHONUNBUFFERED=1
 
 WORKDIR $APP_PATH
 
 # Copy application source.
-COPY markette $APP_PATH/markette
+COPY app $APP_PATH/app
 COPY tests $APP_PATH/tests
 COPY setup.cfg $APP_PATH
 
 EXPOSE 8000
 
-CMD ["uvicorn", "--host"" 0.0.0.0", "--port", "8000", "--workers", "2", "markette.app:app"]
+CMD ["uvicorn", "--host", "0.0.0.0", "--port", "8000", "--workers", "2", "app.main:app"]

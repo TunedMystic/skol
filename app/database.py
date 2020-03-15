@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 
 import asyncpg
 
-from markette import settings
+from app import settings
 
 _pool = None
 

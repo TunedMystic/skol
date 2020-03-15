@@ -3,7 +3,7 @@ from starlette.applications import Starlette
 from starlette.endpoints import HTTPEndpoint
 from starlette.responses import JSONResponse, PlainTextResponse
 
-from markette import database, settings
+from app import database, settings
 
 
 def homepage(request):

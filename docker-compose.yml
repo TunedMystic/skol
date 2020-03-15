@@ -2,8 +2,8 @@ version: '2'
 services:
 
   # Python base app
-  markette-base:
-    container_name: markette-base
+  skol-base:
+    container_name: skol-base
     build: .
     environment:
       DATABASE_DSN: postgresql://postgres:postgres@db:5432/postgres
@@ -16,22 +16,22 @@ services:
   # ---------------------------------------------
 
   # Python app
-  markette:
-    image: tunedmystic/markette
-    container_name: markette
-    extends: markette-base
+  skol:
+    image: tunedmystic/skol
+    container_name: skol
+    extends: skol-base
     ports:
       - 8000:8000
     volumes:
-      - ${PWD}:/app
+      - ${PWD}:/usr/src
     depends_on:
       - db
     tty: true
     command: [
       "uvicorn",
       "--host", "0.0.0.0", "--port", "8000",
-      "--reload", "--reload-dir=/app/markette",
-      "markette.app:app"
+      "--reload", "--reload-dir=/usr/src/app",
+      "app.main:app"
     ]
 
   # Postgres database
@@ -50,17 +50,17 @@ services:
   # ---------------------------------------------
 
   # Python test app
-  markette-test:
-    image: tunedmystic/markette-test
-    container_name: markette-test
-    extends: markette-base
+  skol-test:
+    image: tunedmystic/skol-test
+    container_name: skol-test
+    extends: skol-base
     build:
       context: .
       dockerfile: Dockerfile
       args:
-        - EXTRA_REQUIREMENTS=requirements-dev.txt
+        - REQUIREMENTS_FILE=requirements-dev.txt
     volumes:
-      - ${PWD}:/app
+      - ${PWD}:/usr/src
     depends_on:
       - db
     environment:
