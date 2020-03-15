@@ -3,8 +3,8 @@ import asyncio
 import pytest
 from starlette.testclient import TestClient
 
-from markette import database, settings
-from markette.app import app
+from app import database, settings
+from app.main import app
 
 assert settings.TESTING, 'Must be a test environment'
 
