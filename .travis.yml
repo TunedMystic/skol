@@ -12,3 +12,6 @@ install: make build-test
 script:
   - make lint
   - make test
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)

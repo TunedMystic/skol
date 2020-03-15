@@ -38,8 +38,8 @@ ENV APP_NAME=app APP_PATH=/usr/src PATH=/opt/local/bin:$PATH PYTHONPATH=/opt/loc
 
 WORKDIR $APP_PATH
 
-COPY . $APP_PATH
+ADD source.tar.gz $APP_PATH
 
 EXPOSE 8000
 
-CMD ["/usr/src/entrypoint.sh"]
+CMD ["/usr/src/bin/entrypoint.sh"]
