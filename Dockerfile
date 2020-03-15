@@ -38,11 +38,8 @@ ENV APP_NAME=app APP_PATH=/usr/src PATH=/opt/local/bin:$PATH PYTHONPATH=/opt/loc
 
 WORKDIR $APP_PATH
 
-# Copy application source.
-COPY app $APP_PATH/app
-COPY tests $APP_PATH/tests
-COPY setup.cfg $APP_PATH
+COPY . $APP_PATH
 
 EXPOSE 8000
 
-CMD ["uvicorn", "--host", "0.0.0.0", "--port", "8000", "--workers", "2", "app.main:app"]
+CMD ["/usr/src/entrypoint.sh"]

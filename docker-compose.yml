@@ -26,13 +26,6 @@ services:
       - ${PWD}:/usr/src
     depends_on:
       - db
-    tty: true
-    command: [
-      "uvicorn",
-      "--host", "0.0.0.0", "--port", "8000",
-      "--reload", "--reload-dir=/usr/src/app",
-      "app.main:app"
-    ]
 
   # Postgres database
   db:
