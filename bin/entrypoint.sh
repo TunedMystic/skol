@@ -18,4 +18,4 @@ if [ "$ENV" = "prod" ]; then
 fi
 
 # Run the application
-uvicorn --host 0.0.0.0 --port 8000 $UVICORN_ARGS app.main:app 
+uvicorn --host 0.0.0.0 --port 8000 $UVICORN_ARGS app.main:app

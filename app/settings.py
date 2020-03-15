@@ -13,3 +13,5 @@ PROD = ENV == 'prod'
 
 DATABASE_DSN = config('DATABASE_DSN', cast=URL)
 TEST_DATABASE_DSN = DATABASE_DSN.replace(path='test')
+
+LOG_LEVEL = config('LOG_LEVEL', default='INFO')
