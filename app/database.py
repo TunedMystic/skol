@@ -36,8 +36,8 @@ async def initialize(dsn=None):
     """
     await connect(dsn)
     async with grab_connection() as conn:
-        await _create_tables(conn)
-        await _run_migrations(conn)
+        await conn.fetchrow('select 1 as message;')
+        print('Database connection: ✅')
 
 
 async def get_connection():
@@ -66,11 +66,3 @@ async def grab_connection():
     """
     async with _pool.acquire() as conn:
         yield conn
-
-
-async def _create_tables(conn):
-    print('_create_tables')
-
-
-async def _run_migrations(conn):
-    print('_run_migrations')

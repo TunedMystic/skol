@@ -1,6 +1,7 @@
 import asyncio
 
 import pytest
+from migo import Migrator
 from starlette.testclient import TestClient
 
 from app import database, settings
@@ -38,8 +39,15 @@ async def db():
 
     await database.close()
 
-    # Make connection to the test database, and yield it.
-    await database.initialize(str(settings.TEST_DATABASE_DSN))
+    # Init database.
+    dsn = str(settings.TEST_DATABASE_DSN)
+    await database.initialize(dsn)
+
+    # Migrate database.
+    m = Migrator(dsn)
+    await m.setup()
+    await m.run_migrations()
+
     yield database
     await database.close()
 
