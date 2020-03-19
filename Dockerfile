@@ -1,44 +1,64 @@
-FROM tunedmystic/python-async-deps as base
+# ----------------------------------------------------
+# In stage one, we're using the docker image that
+# has async pip packages already installed.
+# ----------------------------------------------------
+
+FROM tunedmystic/python-async-deps as stage-one
 
 
 
-# -------------------------------------
-# Build the base image, installing pip dependencies.
-# -------------------------------------
+# ----------------------------------------------------
+# In stage two, we're installing the local pip
+# packages. Dev dependencies will also be installed
+# if ENV is 'dev' or 'test'.
+# ----------------------------------------------------
 
-FROM base AS base-build
+FROM stage-one AS stage-two
 
-ARG REQUIREMENTS_FILE
+ARG ENV
 
-# Modify Python path, to be able to get packages from the base image.
-ENV PATH=/opt/local/bin:$PATH PYTHONPATH=/opt/local/lib/python3.8/site-packages
+ENV PYTHONPATH=/async-deps/lib/python3.8/site-packages
 
-RUN mkdir -p /opt/local
+COPY requirements.txt /tmp/
 
-# Copy requirements and install.
-COPY requirements.txt requirements-dev.txt /tmp/
+RUN DEPS_FILE=/tmp/deps.txt; \
+	cp /tmp/requirements.txt $DEPS_FILE; \
+	if [ "$ENV" = "dev" ] || [ "$ENV" = "test" ]; then \
+		echo "Installing dev dependencies"; \
+		sed 's/# dev //g' /tmp/requirements.txt > $DEPS_FILE; \
+	else \
+		echo "Installing dependencies"; \
+	fi; \
+	pip install \
+        --no-cache-dir \
+        --disable-pip-version-check \
+        --no-warn-script-location \
+        --prefix=/local-deps \
+        -r $DEPS_FILE; \
+    rm $DEPS_FILE;
 
-RUN pip install --prefix=/opt/local --disable-pip-version-check --no-warn-script-location -r /tmp/${REQUIREMENTS_FILE:-requirements.txt}
 
 
+# ----------------------------------------------------
+# In stage three, we're copying the source and
+# the installed packages from the other stages.
+# ----------------------------------------------------
 
-# -------------------------------------
-# Build the final image, setting envs and copying over pip dependencies.
-# -------------------------------------
+FROM python:3.8.2-alpine3.11 AS stage-three
 
-FROM python:3.8.2-alpine3.11 AS final-build
-
-# Install system dependencies.
-RUN apk add --no-cache bash
-
-# Copy requirements from builder image.
-COPY --from=base-build /opt/local /opt/local
-
-ENV APP_NAME=app APP_PATH=/usr/src PATH=/opt/local/bin:$PATH PYTHONPATH=/opt/local/lib/python3.8/site-packages:/usr/src/app PYTHONUNBUFFERED=1
+ENV APP_NAME=app \
+    APP_PATH=/usr/src \
+    PATH=/install/bin:$PATH \
+    PYTHONPATH=/install/lib/python3.8/site-packages \
+    PYTHONUNBUFFERED=1
 
 WORKDIR $APP_PATH
 
-ADD source.tar.gz $APP_PATH
+RUN apk add --no-cache bash make
+
+COPY --from=stage-two /async-deps /install
+COPY --from=stage-two /local-deps /install
+COPY . $APP_PATH
 
 EXPOSE 8000
 

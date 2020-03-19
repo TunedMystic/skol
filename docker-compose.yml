@@ -51,10 +51,8 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        - REQUIREMENTS_FILE=requirements-dev.txt
+        - ENV=test
     volumes:
       - ${PWD}:/usr/src
     depends_on:
       - db
-    environment:
-      ENV: test
