@@ -42,7 +42,7 @@ start:  ## Start the containers
 
 .PHONY: test
 test:  ## Run tests
-	docker-compose run --rm ${APP_TEST} sh -c 'coverage run --source app -m unittest -vvv && coverage report'
+	docker-compose run --rm ${APP_TEST} sh -c 'coverage run --source app -m unittest -vvv && coverage report && coverage xml'
 
 .PHONY: install-dev
 install-dev:  ## Install dev + regular requirements
