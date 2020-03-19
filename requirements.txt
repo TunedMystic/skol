@@ -3,3 +3,8 @@ migo==0.0.5
 requests==2.22.0
 starlette==0.13.1
 uvicorn==0.11.2
+
+# dev coverage==5.0
+# dev flake8==3.7.9
+# dev flake8-isort==2.8.0
+# dev isort==4.3.21

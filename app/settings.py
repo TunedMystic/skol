@@ -5,6 +5,11 @@ from starlette.datastructures import URL
 
 config = Config(environ=os.environ)
 
+PROJECT_DIR = os.path.dirname(__file__)
+BASE_DIR = os.path.dirname(PROJECT_DIR)
+
+LOG_LEVEL = config('LOG_LEVEL', default='INFO')
+
 ENV = config('ENV', default='dev')
 
 TESTING = ENV == 'test'
@@ -13,5 +18,3 @@ PROD = ENV == 'prod'
 
 DATABASE_DSN = config('DATABASE_DSN', cast=URL)
 TEST_DATABASE_DSN = DATABASE_DSN.replace(path='test')
-
-LOG_LEVEL = config('LOG_LEVEL', default='INFO')
