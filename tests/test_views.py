@@ -1,12 +1,11 @@
-from unittest import TestCase
-
 from starlette import status
 from starlette.testclient import TestClient
 
 from app.main import app
+from tests.base import BaseTestCase
 
 
-class TestSomething(TestCase):
+class TestSomething(BaseTestCase):
     def setUp(self):
         self.client = TestClient(app=app)
 
