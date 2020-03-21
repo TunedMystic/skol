@@ -22,14 +22,14 @@ ENV PYTHONPATH=/async-deps/lib/python3.8/site-packages
 COPY requirements.txt /tmp/
 
 RUN DEPS_FILE=/tmp/deps.txt; \
-	cp /tmp/requirements.txt $DEPS_FILE; \
-	if [ "$ENV" = "dev" ] || [ "$ENV" = "test" ]; then \
-		echo "Installing dev dependencies"; \
-		sed 's/# dev //g' /tmp/requirements.txt > $DEPS_FILE; \
-	else \
-		echo "Installing dependencies"; \
-	fi; \
-	pip install \
+    cp /tmp/requirements.txt $DEPS_FILE; \
+    if [ "$ENV" = "dev" ] || [ "$ENV" = "test" ]; then \
+        echo "Installing packages + dev"; \
+        sed 's/# dev //g' /tmp/requirements.txt > $DEPS_FILE; \
+    else \
+        echo "Installing packages"; \
+    fi; \
+    pip install \
         --no-cache-dir \
         --disable-pip-version-check \
         --no-warn-script-location \

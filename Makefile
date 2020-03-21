@@ -10,14 +10,12 @@ help:  ## This help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[1m%-15s\033[0m %s\n", $$1, $$2}'
 
 .PHONY: build
-build:  ## Build the images
+build: clean  ## Build the images
 	docker-compose build ${APP}
-	$(MAKE) clean
 
 .PHONY: build-test
-build-test:  ## Build the images for testing
+build-test: clean  ## Build the images for testing
 	docker-compose build ${APP_TEST}
-	$(MAKE) clean
 
 .PHONY: clean
 clean:  ## Remove cached files and dirs from workspace
@@ -44,18 +42,18 @@ start:  ## Start the containers
 test:  ## Run tests
 	docker-compose run --rm ${APP_TEST} sh -c 'coverage run --source app -m unittest -vvv && coverage report && coverage xml'
 
-.PHONY: install-dev
-install-dev:  ## Install dev + regular requirements
-	ENV=dev $(MAKE) install
-
 .PHONY: install
-install:  ## Install requirements
+install:  ## Install packages
 	@DEPS_FILE=deps.txt; \
 	cp requirements.txt $$DEPS_FILE; \
 	if [ "$$ENV" = "dev" ] || [ "$$ENV" = "test" ]; then \
-		echo "Installing dev dependencies"; \
+		echo "Installing packages + dev"; \
 		sed 's/# dev //g' requirements.txt > $$DEPS_FILE; \
 	else \
-		echo "Installing dependencies"; \
+		echo "Installing packages"; \
 	fi; \
 	pip install -r $$DEPS_FILE && rm $$DEPS_FILE
+
+.PHONY: install-dev
+install-dev:  ## Install dev + regular packages
+	ENV=dev $(MAKE) install
