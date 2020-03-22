@@ -6,9 +6,7 @@ BIN_ROOT=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 
 # Migrate the database
-sleep 2
-migo --dsn $DATABASE_DSN migrate
-
+bash $BIN_ROOT/migrate.sh
 
 # Set uvicorn args based on the environment.
 UVICORN_ARGS='--reload --reload-dir=/usr/src/app'

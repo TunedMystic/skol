@@ -1,35 +1,28 @@
-import asyncio
 from unittest import TestCase
+
+from starlette.testclient import TestClient
+
+from app.main import app, database
 
 
 class BaseTestCase(TestCase):
-    """
-    This class can be used as a base for async test cases.
-    Usage:
-        async def test__some_async_thing(self):
-            await some_method()
-        async def asyncSetUp(self):
-            await some_setup()
-        async def tearDown(self):
-            await some_teardown()
-    """
+    def setUp(self):
+        self.client = TestClient(app=app)
 
-    def __getattribute__(self, name):
-        """
-        Gather test methods.
-        If method is async, then wrap it in an event loop runner.
-        """
-        attr = super().__getattribute__(name)
-        if name.startswith('test_') and asyncio.iscoroutinefunction(attr):
-            return lambda: asyncio.run(self.async_test_wrapper(attr))
-        else:
-            return attr
+    def tearDown(self):
+        database.connect()
 
-    async def async_test_wrapper(self, func):
-        asyncSetUp = getattr(self, 'asyncSetUp', None)
-        await asyncSetUp() if asyncSetUp else None
+        # Drop all table data.
+        with database.cursor() as cursor:
+            cursor.execute('''
+                SELECT table_name as name
+                FROM information_schema.tables
+                WHERE table_schema='public';
+            ''')
+            tables = [row['name'] for row in cursor.fetchall()]
 
-        await func()
+            # If there are no tables, then simply return.
+            if not tables:
+                return
 
-        asyncTearDown = getattr(self, 'asyncTearDown', None)
-        await asyncTearDown() if asyncTearDown else None
+            cursor.execute(f"TRUNCATE {', '.join(tables)}")

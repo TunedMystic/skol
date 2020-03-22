@@ -14,15 +14,17 @@ def version(request):
     return JSONResponse({'version': '0.0.1'})
 
 
-async def message(request):
-    conn = await database.get_connection()
-    row = await conn.fetchrow('select 1 as message;')
-    await conn.close()
+def message(request):
+    print(f'ENV: {settings.ENV}')
+    print(f'DATABASE_DSN: {settings.database_dsn()}')
+    with database.cursor() as cursor:
+        cursor.execute('select 1 as message;')
+        row = cursor.fetchone()
     return JSONResponse(dict(row))
 
 
 class ProductList(HTTPEndpoint):
-    async def get(self, request):
+    def get(self, request):
         data = [
             {'id': '2c2dd3ff', 'name': 'Amazon Echo'},
             {'id': '2c2dd3ff', 'name': 'Apple iPhone'},
@@ -32,14 +34,14 @@ class ProductList(HTTPEndpoint):
         ]
         return JSONResponse(data)
 
-    async def post(self, request):
+    def post(self, request):
         return JSONResponse({'message': 'Product created'},
                             status_code=status.HTTP_201_CREATED)
 
 
 app = Starlette(debug=settings.DEV)
 
-app.add_event_handler('startup', database.initialize)
+app.add_event_handler('startup', database.connect)
 app.add_event_handler('shutdown', database.close)
 
 app.add_route('/', homepage)

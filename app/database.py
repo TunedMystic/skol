@@ -1,68 +1,53 @@
-from contextlib import asynccontextmanager
+import logging
+from contextlib import contextmanager
 
-import asyncpg
+from psycopg2.extras import DictCursor
+from psycopg2.pool import SimpleConnectionPool as Pool
 
 from app import settings
+
+logger = logging.getLogger(__name__)
 
 _pool = None
 
 
-async def connect(dsn=None):
-    """Create a connection pool."""
+def connect():
     global _pool
-
-    if not dsn:
-        dsn = str(settings.DATABASE_DSN)
-
-    _pool = await asyncpg.create_pool(
-        dsn=dsn,
-        min_size=7,
-        max_size=7,
-        timeout=5,
-    )
+    _pool = Pool(minconn=1,
+                 maxconn=10,
+                 cursor_factory=DictCursor,
+                 dsn=settings.database_dsn())
 
 
-async def close():
-    """Close the connection pool."""
-    await _pool.close()
+def close():
+    _pool.closeall()
 
 
-async def initialize(dsn=None):
+@contextmanager
+def cursor():
     """
-    Initialize the database by performing the following:
-        - Make db connection pool
-        - Make tables
-        - Run migrations
+    Create a quick cursor.
+    Ref: https://github.com/psycopg/psycopg2/pull/367#issuecomment-241582921
     """
-    await connect(dsn)
-    async with grab_connection() as conn:
-        await conn.fetchrow('select 1 as message;')
-        print('Database connection: ✅')
+    try:
+        conn = _pool.getconn()
+        with conn:
+            with conn.cursor() as cursor:
+                yield cursor
+    except Exception as e:
+        logging.error(f'[quick_cursor] {str(e)}')
+        raise e
+    finally:
+        _pool.putconn(conn)
 
 
-async def get_connection():
-    """
-    Get a connection from the pool.
+def get_cursor():
+    conn = _pool.getconn()
+    conn.autocommit = True
+    cursor = conn.cursor(cursor_factory=DictCursor)
 
-    The connection (conn) will be released back
-    to the pool by calling `conn.close()`.
+    def close():
+        conn.close()
+        _pool.putconn(conn)
 
-    Returns:
-        asyncpg.connection.Connection
-    """
-    return await _pool.acquire()
-
-
-@asynccontextmanager
-async def grab_connection():
-    """
-    Yield a connection from the pool.
-
-    The connection (conn) will be released back
-    to the pool after the context manager exits.
-
-    Returns:
-        asyncpg.connection.Connection
-    """
-    async with _pool.acquire() as conn:
-        yield conn
+    return cursor, close
