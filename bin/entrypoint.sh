@@ -6,8 +6,8 @@ BIN_ROOT=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 
 # Migrate the database
-sleep 2
-migo --dsn $DATABASE_DSN migrate
+migo --dsn $DATABASE_DSN wait
+migo --dsn $DATABASE_DSN --dir sql/migrations migrate
 
 
 # Set uvicorn args based on the environment.

@@ -18,3 +18,9 @@ PROD = ENV == 'prod'
 
 DATABASE_DSN = config('DATABASE_DSN', cast=URL)
 TEST_DATABASE_DSN = DATABASE_DSN.replace(path='test')
+
+
+def database_dsn():
+    if TESTING:
+        return str(TEST_DATABASE_DSN)
+    return str(DATABASE_DSN)

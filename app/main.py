@@ -39,7 +39,7 @@ class ProductList(HTTPEndpoint):
 
 app = Starlette(debug=settings.DEV)
 
-app.add_event_handler('startup', database.initialize)
+app.add_event_handler('startup', database.connect)
 app.add_event_handler('shutdown', database.close)
 
 app.add_route('/', homepage)

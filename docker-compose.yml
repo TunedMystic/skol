@@ -56,3 +56,6 @@ services:
       - ${PWD}:/usr/src
     depends_on:
       - db
+    environment:
+      ENV: test
+      PYTHONDONTWRITEBYTECODE: 1
