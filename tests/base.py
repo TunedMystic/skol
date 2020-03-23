@@ -10,7 +10,7 @@ class BaseTestCase(TestCase):
             await some_method()
         async def asyncSetUp(self):
             await some_setup()
-        async def tearDown(self):
+        async def asyncTearDown(self):
             await some_teardown()
     """
 

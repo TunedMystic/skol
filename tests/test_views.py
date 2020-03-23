@@ -1,14 +1,34 @@
 from starlette import status
 from starlette.testclient import TestClient
 
-from app.main import app
+from app.main import app, database
 from tests.base import BaseTestCase
 
 
-class TestSomething(BaseTestCase):
+class BaseAppTestCase(BaseTestCase):
     def setUp(self):
         self.client = TestClient(app=app)
 
+    async def asyncTearDown(self):
+        await database.connect()
+
+        # Drop all table data.
+        async with database.grab_connection() as conn:
+            rows = await conn.execute('''
+                SELECT table_name as name
+                FROM information_schema.tables
+                WHERE table_schema='public';
+            ''')
+            tables = [row['name'] for row in rows]
+
+            # If there are no tables, then simply return.
+            if not tables:
+                return
+
+            await conn.execute(f"TRUNCATE {', '.join(tables)}")
+
+
+class TestSomething(BaseAppTestCase):
     def test__thing(self):
         self.assertEqual(1 + 2, 3)
 
