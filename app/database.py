@@ -31,8 +31,10 @@ async def get_connection():
     """
     Get a connection from the pool.
 
-    The connection (conn) will be released back
-    to the pool by calling the returned function.
+    This function returns:
+        1. An asyncpg.connection (conn)
+        2. A function to return the connection
+           back to the pool (func)
 
     Returns:
         asyncpg.connection.Connection, func

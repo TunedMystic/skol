@@ -19,11 +19,6 @@ def version(request):
 
 
 async def message(request):
-    # async with database.grab_connection() as conn:
-    #     row = await conn.fetchrow('SELECT floor(random() * 5) AS message;')
-    #     server_pid = conn.get_server_pid()
-    #     msg = f'app_id: {id(request.app)} - conn_id: {server_pid} - pool_id: {id(database._pool)}'
-    #     logger.info(msg)
     conn, done = await database.get_connection()
     row = await conn.fetchrow('SELECT floor(random() * 5) AS message;')
     server_pid = conn.get_server_pid()
