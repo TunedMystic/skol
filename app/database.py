@@ -31,13 +31,16 @@ async def get_connection():
     """
     Get a connection from the pool.
 
-    The connection (conn) will be released back
-    to the pool by calling `conn.close()`.
+    This function returns:
+        1. An asyncpg.connection (conn)
+        2. A function to return the connection
+           back to the pool (func)
 
     Returns:
-        asyncpg.connection.Connection
+        asyncpg.connection.Connection, func
     """
-    return await _pool.acquire()
+    conn = await _pool.acquire()
+    return conn, lambda: _pool.release(conn)
 
 
 @asynccontextmanager
