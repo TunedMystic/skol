@@ -2,7 +2,6 @@ import logging
 import os
 
 from starlette.config import Config
-from starlette.datastructures import URL
 
 config = Config(environ=os.environ)
 
@@ -23,8 +22,8 @@ PROD = APP_ENV == 'prod'
 
 # Database
 
-DATABASE_DSN = config('DATABASE_DSN', cast=URL)
-TEST_DATABASE_DSN = DATABASE_DSN.replace(path='test')
+DATABASE_DSN = config('DATABASE_DSN')
+TEST_DATABASE_DSN = DATABASE_DSN.rsplit('/', 1)[0] + '/test'
 
 
 # Logging
@@ -38,5 +37,5 @@ logger.setLevel(logging.getLevelName(LOG_LEVEL))
 
 def database_dsn():
     if TESTING:
-        return str(TEST_DATABASE_DSN)
-    return str(DATABASE_DSN)
+        return TEST_DATABASE_DSN
+    return DATABASE_DSN
