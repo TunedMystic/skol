@@ -20,7 +20,7 @@ async def test__db__insert_users(conn):
 
 
 @pytest.mark.asyncio
-async def test__db__insert_users_2(conn):
+async def test__db__insert_user(conn):
     await conn.execute('''
         insert into _user(name, email)
         values

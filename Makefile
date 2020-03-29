@@ -39,12 +39,9 @@ start:  ## Start the containers
 	docker-compose up -d ${APP}
 	docker-compose logs -f ${APP} || echo "Exited container logs"
 
-.PHONY: run-tests
-run-tests:
-	@docker-compose run --rm ${APP_TEST} sh -c 'pytest -s tests'
-
 .PHONY: test
-test: run-tests clean  ## Run tests
+test:  ## Run tests
+	@docker-compose run --rm ${APP_TEST} sh -c 'pytest -s --cov app --cov-report term --cov-report xml tests'
 
 .PHONY: install
 install:  ## Install packages
