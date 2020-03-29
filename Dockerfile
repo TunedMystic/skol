@@ -15,7 +15,7 @@ FROM tunedmystic/python-async-deps as stage-one
 
 FROM stage-one AS stage-two
 
-ARG ENV
+ARG APP_ENV
 
 ENV PYTHONPATH=/async-deps/lib/python3.8/site-packages
 
@@ -23,7 +23,7 @@ COPY requirements.txt /tmp/
 
 RUN DEPS_FILE=/tmp/deps.txt; \
     cp /tmp/requirements.txt $DEPS_FILE; \
-    if [ "$ENV" = "dev" ] || [ "$ENV" = "test" ]; then \
+    if [ "$APP_ENV" = "dev" ] || [ "$APP_ENV" = "test" ]; then \
         echo "Installing packages + dev"; \
         sed 's/# dev //g' /tmp/requirements.txt > $DEPS_FILE; \
     else \

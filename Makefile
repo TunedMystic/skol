@@ -50,7 +50,7 @@ test: dump-schema run-tests clean  ## Run tests
 install:  ## Install packages
 	@DEPS_FILE=deps.txt; \
 	cp requirements.txt $$DEPS_FILE; \
-	if [ "$$ENV" = "dev" ] || [ "$$ENV" = "test" ]; then \
+	if [ "$$APP_ENV" = "dev" ] || [ "$$APP_ENV" = "test" ]; then \
 		echo "Installing packages + dev"; \
 		sed 's/# dev //g' requirements.txt > $$DEPS_FILE; \
 	else \
@@ -60,7 +60,7 @@ install:  ## Install packages
 
 .PHONY: install-dev
 install-dev:  ## Install dev + regular packages
-	ENV=dev $(MAKE) install
+	APP_ENV=dev $(MAKE) install
 
 .PHONY: dump-schema
 dump-schema:  ## Dump the database schema to a file.

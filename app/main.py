@@ -1,9 +1,13 @@
+import logging
+
 from starlette import status
 from starlette.applications import Starlette
 from starlette.endpoints import HTTPEndpoint
 from starlette.responses import JSONResponse, PlainTextResponse
 
 from app import database, settings
+
+logger = logging.getLogger(__name__)
 
 
 def homepage(request):
@@ -15,9 +19,11 @@ def version(request):
 
 
 async def message(request):
-    conn = await database.get_connection()
-    row = await conn.fetchrow('select 1 as message;')
-    await conn.close()
+    async with database.grab_connection() as conn:
+        row = await conn.fetchrow('SELECT floor(random() * 5) AS message;')
+        server_pid = conn.get_server_pid()
+        msg = f'app_id: {id(request.app)} - conn_id: {server_pid} - pool_id: {id(database._pool)}'
+        logger.info(msg)
     return JSONResponse(dict(row))
 
 
