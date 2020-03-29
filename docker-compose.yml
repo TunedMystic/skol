@@ -6,8 +6,8 @@ services:
     container_name: skol-base
     build: .
     environment:
+      APP_ENV: dev
       DATABASE_DSN: postgresql://postgres:postgres@db:5432/postgres
-      ENV: dev
       LOG_LEVEL: INFO
 
 
@@ -51,11 +51,11 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        - ENV=test
+        - APP_ENV=test
     volumes:
       - ${PWD}:/usr/src
     depends_on:
       - db
     environment:
-      ENV: test
+      APP_ENV: test
       PYTHONDONTWRITEBYTECODE: 1

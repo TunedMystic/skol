@@ -8,11 +8,17 @@ _pool = None
 
 
 async def connect(dsn=None):
+    """
+    Create database pool.
+
+    What should the size of the pool be?
+    Ref: https://stackoverflow.com/questions/60233495
+    """
     global _pool
     _pool = await asyncpg.create_pool(
         dsn=settings.database_dsn(),
-        min_size=7,
-        max_size=7,
+        min_size=1,
+        max_size=1,
         timeout=5,
     )
 
