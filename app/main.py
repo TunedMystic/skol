@@ -15,7 +15,7 @@ def homepage(request):
 
 
 def version(request):
-    return JSONResponse({'version': '0.0.1'})
+    return JSONResponse({'version': '0.0.2'})
 
 
 async def message(request):
