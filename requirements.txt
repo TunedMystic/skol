@@ -1,4 +1,4 @@
-asyncpg==0.20.1
+asyncpg==0.21.0
 migo==0.0.6
 requests==2.22.0
 starlette==0.13.1
